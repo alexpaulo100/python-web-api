@@ -91,8 +91,8 @@ O que é o Ruff?
 Ruff é uma ferramenta rápida e eficiente de linting e formatação que ajuda a identificar problemas no código, como erros de estilo, bugs potenciais e muito mais.
 #### Como o Ruff é Usado Neste Projeto
 
-    Verificação Contínua: O código é verificado regularmente com o Ruff para assegurar que todos os padrões de codificação estão sendo seguidos.
-    Feedback Imediato: Os desenvolvedores recebem feedback instantâneo sobre problemas no código, facilitando a manutenção e a colaboração.
+Verificação Contínua: O código é verificado regularmente com o Ruff para assegurar que todos os padrões de codificação estão sendo seguidos.
+Feedback Imediato: Os desenvolvedores recebem feedback instantâneo sobre problemas no código, facilitando a manutenção e a colaboração.
 
 #### Executando o Ruff
 
