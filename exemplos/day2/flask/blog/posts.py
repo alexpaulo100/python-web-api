@@ -1,6 +1,7 @@
-from blog.database import mongo
 from datetime import datetime
 
+from blog.database import mongo
+from unidecode import unidecode
 
 
 def get_all_posts(published: bool = True):
@@ -13,18 +14,34 @@ def get_post_by_slug(slug: str) -> dict:
     return post
 
 
-
 def update_post_by_slug(slug: str, data: dict) -> dict:
-    # TODO: Se o titulo muda, atualizar o slug  {falhar se ja existir}
-    return mongo.db.posts.find_one_and_update({"slug": slug}, {"$set":data})
+    # Buscar o post atual para obter o título
+    current_post = mongo.db.posts.find_one({"slug": slug})
+    if not current_post:
+        raise ValueError(f"Post with slug '{slug}' not found.")
 
+    # Verificar se o título foi atualizado
+    new_title = data.get("title")
+    if new_title and new_title != current_post["title"]:
+        # Gerar novo slug
+        new_slug = unidecode(new_title).replace(" ", "-").lower()
+
+        # Verificar se o novo slug já existe
+        if mongo.db.posts.find_one({"slug": new_slug}):
+            raise ValueError(f"Post with slug '{new_slug}' already exists.")
+
+        # Adicionar o novo slug aos dados
+        data["slug"] = new_slug
+
+    # Atualizar o post
+    return mongo.db.posts.find_one_and_update({"slug": slug}, {"$set": data})
 
 
 def new_post(title: str, content: str, published: bool = True) -> str:
-    # TODO: Refatorar a criação do slug removendo acentos
-    slug = title.replace(" ", "-").replace(" ", "-").lower()
-    # TODO: Verificar se post com este slug já existe
-    new = mongo.db.posts.insert_one(
+    slug = unidecode(title).replace(" ", "-").lower()
+    if mongo.db.posts.find_one({"slug": slug}):
+        raise ValueError(f"Post with slug '{slug}' already exists.")
+    mongo.db.posts.insert_one(
         {
             "title": title,
             "content": content,
@@ -36,3 +53,10 @@ def new_post(title: str, content: str, published: bool = True) -> str:
     return slug
 
 
+def delete_post_by_slug(slug: str) -> bool:
+    """Delete a post by its slug."""
+    result = mongo.db.posts.delete_one({"slug": slug})
+    if result.deleted_count > 0:
+        return True
+    else:
+        return False
