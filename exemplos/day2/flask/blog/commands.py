@@ -14,12 +14,15 @@ def post():
 
 
 @post.command()
-@click.option("--title")
-@click.option("--content")
+@click.option("--title", required=True)
+@click.option("--content", required=True)
 def new(title, content):
     """Add new post to database."""
-    new = new_post(title, content)
-    click.echo(f"New post created {new}")
+    try:
+        slug = new_post(title, content)
+        click.echo(f"New post created with slug: {slug}")
+    except Exception as e:
+        click.echo(f"Error creating post: {e}")
 
 
 @post.command("list")

@@ -1,8 +1,9 @@
 from datetime import datetime
 
 import pymongo
-from blog.database import mongo
 from unidecode import unidecode
+
+from blog.database import mongo
 
 
 def get_all_posts(published: bool = True):
@@ -39,19 +40,25 @@ def update_post_by_slug(slug: str, data: dict) -> dict:
 
 
 def new_post(title: str, content: str, published: bool = True) -> str:
-    slug = unidecode(title).replace(" ", "-").lower()
-    if mongo.db.posts.find_one({"slug": slug}):
-        raise ValueError(f"Post with slug '{slug}' already exists.")
-    mongo.db.posts.insert_one(
-        {
-            "title": title,
-            "content": content,
-            "published": published,
-            "slug": slug,
-            "date": datetime.now(),
-        }
-    )
-    return slug
+    try:
+        slug = unidecode(title).replace(" ", "-").lower()
+        if mongo.db.posts.find_one({"slug": slug}):
+            raise ValueError(f"Post with slug '{slug}' already exists.")
+
+        print("Inserindo novo post...")
+        mongo.db.posts.insert_one(
+            {
+                "title": title,
+                "content": content,
+                "published": published,
+                "slug": slug,
+                "date": datetime.now(),
+            }
+        )
+        print("Post inserido com sucesso.")
+        return slug
+    except Exception as e:
+        print(f"Erro ao inserir o post: {e}")
 
 
 def delete_post_by_slug(slug: str) -> bool:
