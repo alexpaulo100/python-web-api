@@ -9,5 +9,5 @@ extensions = [
     "blog.plugins:configure",
     "blog.auth:configure",
 ]
-secret_key = "122ed58ef33093c086a10993fac0843a2610ac1945b16521f01367c2932978c6"
+
 
